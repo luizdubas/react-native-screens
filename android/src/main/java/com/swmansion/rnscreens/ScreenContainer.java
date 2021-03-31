@@ -295,18 +295,22 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
       mParentScreenFragment = null;
     }
 
-    super.onDetachedFromWindow();
-    mIsAttached = false;
-    // When fragment container view is detached we force all its children to be removed.
-    // It is because children screens are controlled by their fragments, which can often have a
-    // delayed lifecycle (due to transitions). As a result due to ongoing transitions the fragment
-    // may choose not to remove the view despite the parent container being completely detached
-    // from the view hierarchy until the transition is over. In such a case when the container gets
-    // re-attached while tre transition is ongoing, the child view would still be there and we'd
-    // attept to re-attach it to with a misconfigured fragment. This would result in a crash. To
-    // avoid it we clear all the children here as we attach all the child fragments when the container
-    // is reattached anyways.
-    removeAllViews();
+    try {
+      super.onDetachedFromWindow();
+      mIsAttached = false;
+      // When fragment container view is detached we force all its children to be removed.
+      // It is because children screens are controlled by their fragments, which can often have a
+      // delayed lifecycle (due to transitions). As a result due to ongoing transitions the fragment
+      // may choose not to remove the view despite the parent container being completely detached
+      // from the view hierarchy until the transition is over. In such a case when the container gets
+      // re-attached while tre transition is ongoing, the child view would still be there and we'd
+      // attept to re-attach it to with a misconfigured fragment. This would result in a crash. To
+      // avoid it we clear all the children here as we attach all the child fragments when the container
+      // is reattached anyways.
+      removeAllViews();
+    } catch(NullPointerException e) {
+      System.out.println("NullPointerException happened");
+    }
   }
 
   @Override
